@@ -155,13 +155,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     });
   }
 
-  void _onVisibleDaysChanged(DateTime first, DateTime last,
-      CalendarFormat format) {
+  void _onVisibleDaysChanged(
+      DateTime first, DateTime last, CalendarFormat format) {
     print('CALLBACK: _onVisibleDaysChanged');
   }
 
-  void _onCalendarCreated(DateTime first, DateTime last,
-      CalendarFormat format) {
+  void _onCalendarCreated(
+      DateTime first, DateTime last, CalendarFormat format) {
     print('CALLBACK: _onCalendarCreated');
   }
 
@@ -212,7 +212,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       headerStyle: HeaderStyle(
         centerHeaderTitle: true,
         formatButtonTextStyle:
-        TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
+            TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
         formatButtonDecoration: BoxDecoration(
           color: Colors.deepOrange[400],
           borderRadius: BorderRadius.circular(16.0),
@@ -291,8 +291,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         color: _calendarController.isSelected(date)
             ? Colors.brown[500]
             : _calendarController.isToday(date)
-            ? Colors.brown[300]
-            : Colors.blue[400],
+                ? Colors.brown[300]
+                : Colors.blue[400],
       ),
       width: 16.0,
       height: 16.0,
@@ -339,7 +339,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   _createNewScheduleDialog(BuildContext context) {
     TextEditingController scheduleNameController = TextEditingController();
     TextEditingController scheduleDescriptionController =
-    TextEditingController();
+        TextEditingController();
     bool _isAllDaySchedule = false;
     var _selectedTypeValue = 'Study';
 
@@ -348,118 +348,117 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-                return Dialog(
-                  backgroundColor: Colors.white,
-                  insetPadding: EdgeInsets.all(10),
-                  child: Stack(
-                    overflow: Overflow.visible,
-                    alignment: Alignment.center,
-                    children: <Widget>[
-                      Container(
-                        width: double.infinity,
-                        height: 300,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: ListView(
+            return Dialog(
+              backgroundColor: Colors.white,
+              insetPadding: EdgeInsets.all(10),
+              child: Stack(
+                overflow: Overflow.visible,
+                alignment: Alignment.center,
+                children: <Widget>[
+                  Container(
+                    width: double.infinity,
+                    height: 300,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ListView(
+                      children: <Widget>[
+                        Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              Text("Name"),
+                              SizedBox(
+                                width: 300,
+                                height: 30,
+                                child: TextField(
+                                  controller: scheduleNameController,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                            ]),
+                        Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              Text("Description"),
+                              SizedBox(
+                                width: 300,
+                                height: 30,
+                                child: TextField(
+                                  controller: scheduleDescriptionController,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                            ]),
+                        Row(
                           children: <Widget>[
-                            Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  Text("Name"),
-                                  SizedBox(
-                                    width: 300,
-                                    height: 30,
-                                    child: TextField(
-                                      controller: scheduleNameController,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                ]),
-                            Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  Text("Description"),
-                                  SizedBox(
-                                    width: 300,
-                                    height: 30,
-                                    child: TextField(
-                                      controller: scheduleDescriptionController,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                ]),
-                            Row(
-                              children: <Widget>[
-                                Checkbox(
-                                    value: _isAllDaySchedule,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _isAllDaySchedule = !_isAllDaySchedule;
-                                        print(
-                                            'checkbox clicked $_isAllDaySchedule');
-                                      });
-                                    }),
-                                Text(
-                                  'All-Day Schedule',
-                                  style: TextStyle(fontSize: 10.0),
-                                ),
-                                DropdownButton(
-                                  value: _selectedTypeValue,
-                                  items: eventTypes.map((value) {
-                                    return DropdownMenuItem(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedTypeValue = value;
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                _buildEventsListButton(Icon(Icons.check), () {
+                            Checkbox(
+                                value: _isAllDaySchedule,
+                                onChanged: (value) {
                                   setState(() {
-                                    if (scheduleDescriptionController.text ==
-                                        '')
-                                      scheduleDescriptionController.text =
-                                      'No Description';
-                                    _events[_selectedDay] =
-                                        _events[_selectedDay] ?? [];
-                                    _events[_selectedDay].add(SingleEvent(
-                                      name: scheduleNameController.text,
-                                      description:
-                                      scheduleDescriptionController.text,
-                                      isallday: _isAllDaySchedule,
-                                      type: _selectedTypeValue,
-                                    ));
+                                    _isAllDaySchedule = !_isAllDaySchedule;
+                                    print(
+                                        'checkbox clicked $_isAllDaySchedule');
                                   });
-                                  Navigator.of(context).pop();
                                 }),
-                                _buildEventsListButton(Icon(Icons.clear), () {
-                                  Navigator.of(context).pop();
-                                }),
-                              ],
+                            Text(
+                              'All-Day Schedule',
+                              style: TextStyle(fontSize: 10.0),
+                            ),
+                            DropdownButton(
+                              value: _selectedTypeValue,
+                              items: eventTypes.map((value) {
+                                return DropdownMenuItem(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedTypeValue = value;
+                                });
+                              },
                             ),
                           ],
                         ),
-                      )
-                    ],
-                  ),
-                );
-              });
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            _buildEventsListButton(Icon(Icons.check), () {
+                              setState(() {
+                                if (scheduleDescriptionController.text == '')
+                                  scheduleDescriptionController.text =
+                                      'No Description';
+                                _events[_selectedDay] =
+                                    _events[_selectedDay] ?? [];
+                                _events[_selectedDay].add(SingleEvent(
+                                  name: scheduleNameController.text,
+                                  description:
+                                      scheduleDescriptionController.text,
+                                  isallday: _isAllDaySchedule,
+                                  type: _selectedTypeValue,
+                                ));
+                              });
+                              Navigator.of(context).pop();
+                            }),
+                            _buildEventsListButton(Icon(Icons.clear), () {
+                              Navigator.of(context).pop();
+                            }),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            );
+          });
         });
   }
 
@@ -494,9 +493,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             ),
             ListView(
               shrinkWrap: true,
-              physics: ClampingScrollPhysics(),
+              //physics: ClampingScrollPhysics(),
               children: _selectedEvents.map((event) {
-
                 Icon _eventIcon = Icon(Icons.schedule);
 
                 if (event.type == 'Study') {

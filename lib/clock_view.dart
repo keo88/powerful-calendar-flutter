@@ -1,7 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' as intl;
 import 'dart:async';
 import 'dart:math';
-
-import 'package:flutter/material.dart';
 
 class ClockView extends StatefulWidget {
   @override
@@ -9,24 +9,50 @@ class ClockView extends StatefulWidget {
 }
 
 class _ClockViewState extends State<ClockView> {
+  var dateTime = DateTime.now();
+  var formattedTime, formattedDate;
+
   @override
   void initState() {
     Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        //update by 1 sec.
-      });
+      setState(() {});
     });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        width: 300,
-        height: 300,
-        child: CustomPaint(
-          painter: ClockPainter(),
-        ));
+
+    formattedTime = intl.DateFormat('HH:mm').format(dateTime);
+    formattedDate = intl.DateFormat('EEE, d MMM').format(dateTime);
+
+    return Stack(
+      alignment: AlignmentDirectional.topStart,
+      children: [
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: 300,
+          child: CustomPaint(
+            painter: ClockPainter(),
+          )
+        ),
+        Container(
+          width: 200.0,
+          height: 100.0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(formattedTime,
+                style: TextStyle(color: Colors.grey[900], fontSize: 36),
+              ),
+              Text(formattedDate,
+                style: TextStyle(color: Colors.grey[900], fontSize: 18),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -71,8 +97,8 @@ class ClockPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 16;
 
-    canvas.drawCircle(center, radius - 40, fillBrush);
-    canvas.drawCircle(center, radius - 40, outlineBrush);
+    canvas.drawCircle(center, radius - 60, fillBrush);
+    canvas.drawCircle(center, radius - 60, outlineBrush);
 
     var hourHandX = centerX +
         40 * cos(pi * (0.5 - (dateTime.hour % 12) / 6) - dateTime.minute / 360);
@@ -92,8 +118,8 @@ class ClockPainter extends CustomPainter {
 
     canvas.drawCircle(center, 16, centerFillBrush);
 
-    var clockLineRadius = radius;
-    var clockLineLength = 14;
+    var clockLineRadius = radius - 40;
+    var clockLineLength = 10;
     var clockDotX, clockDotY;
     var clockLineBrush = Paint()
       ..color = Color(0xFFEAECFF)
@@ -112,7 +138,5 @@ class ClockPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
