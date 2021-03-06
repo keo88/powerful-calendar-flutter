@@ -19,25 +19,59 @@ final Map<DateTime, List> _holidays = {
 
 final eventTypes = ['Study', 'WorkOut', 'Date', 'HangOut'];
 
-enum EventType {
-  study,
-  WorkOut,
-  Date,
-  HangOut,
-}
-
-class SingleEvent {
-  SingleEvent({
-    this.name,
-    this.description,
-    this.type,
-    this.isallday,
-  });
-
+class Event {
   String type;
   String name;
   String description = 'No Description';
-  bool isallday = false;
+  DateTime date;
+  bool isAllDay;
+
+  Event({
+    this.name,
+    this.description,
+    this.type,
+    this.date,
+    this.isAllDay,
+  });
+}
+
+class SingleEvent extends Event {
+  bool isAllDay = false;
+
+  SingleEvent({
+    String type,
+    String name,
+    String description,
+    DateTime date,
+    bool isAllDay,
+  }) : super(
+            name: name,
+            description: description,
+            type: type,
+            date: date,
+            isAllDay: isAllDay);
+}
+
+enum RepeatType {
+  Day,
+  Week,
+  Month,
+}
+
+class RepeatedEvent extends Event {
+  RepeatType repeatType;
+  DateTime endDate;
+  int repeatInterval;
+
+  RepeatedEvent({
+    String type,
+    String name,
+    String description,
+    @required DateTime date,
+    @required this.endDate,
+    @required this.repeatInterval,
+    @required this.repeatType,
+  }) : super(name: name, description: description, type: type, date: date);
 }
 
 void main() {
@@ -72,6 +106,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Map<DateTime, List> _events;
+  List<RepeatedEvent> _repeatedEvents;
   List _selectedEvents;
   DateTime _selectedDay;
   AnimationController _animationController;
@@ -87,6 +122,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
     print('Selected Day in initState: $_selectedDay');
 
+    _repeatedEvents = [
+      RepeatedEvent(
+          type: 'Study',
+          name: 'daily study',
+          repeatInterval: 2,
+          repeatType: RepeatType.Day,
+          date: DateTime(2021, 3, 2),
+          endDate: DateTime(2200, 12, 31),
+      )
+    ];
     _events = {
       _selectedDay.subtract(Duration(days: 30)): [
         SingleEvent(name: 'Event A0'),
@@ -157,7 +202,61 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   void _onVisibleDaysChanged(
       DateTime first, DateTime last, CalendarFormat format) {
+    setState(() {
+      _calendarUpdate(first, last);
+    });
     print('CALLBACK: _onVisibleDaysChanged');
+  }
+
+  void _calendarUpdate(DateTime first, DateTime last) {
+    for (RepeatedEvent _curEvent in _repeatedEvents) {
+      if (_curEvent.date.isBefore(last) && _curEvent.endDate.isAfter(first)) {
+        int _interval = _curEvent.repeatInterval;
+        String _type = _curEvent.type;
+        String _name = _curEvent.name;
+        String _description = _curEvent.description;
+        bool _isAllDay = _curEvent.isAllDay;
+        DateTime _curDate = _curEvent.date;
+
+        DateTime _startDate, _endDate;
+        Duration _startDiff = _curEvent.date.difference(first);
+        Duration _endDiff = _curEvent.endDate.difference(last);
+
+        _startDate = _startDiff.inDays >= 0 ? _curDate : first;
+        _endDate = _endDiff.inDays <= 0 ? _curEvent.endDate : last;
+
+        Duration _diff = _startDate.difference(_curDate);
+
+        if (_curEvent.repeatType == RepeatType.Day) {
+          for (int days = (_diff.inDays ~/ _interval) * _interval;
+              days <= _endDate.difference(_curDate).inDays;
+              days += _interval) {
+            DateTime _addDate = _curDate.add(Duration(days: days));
+            _events[_addDate] = _events[_addDate] ?? [];
+            _events[_addDate].add(SingleEvent(
+                type: _type,
+                name: _name,
+                description: _description,
+                date: _addDate,
+                isAllDay: _isAllDay));
+          }
+        } else if (_curEvent.repeatType == RepeatType.Week) {
+          _interval *= 7;
+          for (int weeks = (_diff.inDays ~/ _interval) * _interval;
+              weeks <= _endDate.difference(_curDate).inDays;
+              weeks += _interval) {
+            DateTime _addDate = _curDate.add(Duration(days: weeks * 7));
+            _events[_addDate] = _events[_addDate] ?? [];
+            _events[_addDate].add(SingleEvent(
+                type: _type,
+                name: _name,
+                description: _description,
+                date: _addDate,
+                isAllDay: _isAllDay));
+          }
+        } else if (_curEvent.repeatType == RepeatType.Month) {}
+      }
+    }
   }
 
   void _onCalendarCreated(
@@ -441,7 +540,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                   name: scheduleNameController.text,
                                   description:
                                       scheduleDescriptionController.text,
-                                  isallday: _isAllDaySchedule,
+                                  isAllDay: _isAllDaySchedule,
                                   type: _selectedTypeValue,
                                 ));
                               });
@@ -472,7 +571,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             color: Colors.white24,
             border: Border(top: BorderSide(color: Colors.grey)),
           ),
-          child: ListView(shrinkWrap: true, children: <Widget>[
+          child: Column(children: <Widget>[
             Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
               _buildEventsListButton(Icon(Icons.add), () {
                 setState(() {
@@ -493,7 +592,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             ),
             ListView(
               shrinkWrap: true,
-              //physics: ClampingScrollPhysics(),
               children: _selectedEvents.map((event) {
                 Icon _eventIcon = Icon(Icons.schedule);
 
