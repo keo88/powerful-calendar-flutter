@@ -1,16 +1,13 @@
-# powerful_calendar_flutter
+# Powerful Calendar Flutter
 
-A new Flutter application.
+Simple alarm flutter app design
 
-## Getting Started
+![PowerfulCalendar](https://github.com/keo88/powerful-calendar-flutter/raw/RepeatedEventsImplementation/support/PowerfulCalendar.png)
 
-This project is a starting point for a Flutter application.
+# Features
+- Events with types can be added on the calendar
+- Calendar View can be switched from Week, Month
+- Visible, fully functional clock
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# To be implemented
+ - An actual alarm feature
